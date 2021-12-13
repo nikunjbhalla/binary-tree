@@ -1,7 +1,7 @@
 class bookNode:
-    def __init__ (self, bkID, availCount):
+    def __init__ (self, bkID, avail_count):
         self.bookID = bkID
-        self.avCntr = availCount
+        self.avCntr = avail_count
         self.chkOutCntr = 0
         self.left = None
         self.right = None
@@ -25,61 +25,44 @@ class bookNode:
         return res
 
 
-def insert(node, bkID, availCount):   
+def insert(node, bkID, avail_count):   
     q = []  
     q.append(node)  
  
-    while (len(q)):  
+    while len(q):
         node = q[0]  
         q.pop(0)  
 
         if not node.left: 
-            node.left = bookNode(bkID, availCount)  
+            node.left = bookNode(bkID, avail_count)  
             break
         else: 
             q.append(node.left)  
 
         if not node.right: 
-            node.right = bookNode(bkID, availCount)
+            node.right = bookNode(bkID, avail_count)
             break
         else: 
             q.append(node.right)
-    
+
+
 def lookup(node, key): 
-    if (node == None):
+    if node is None:
         return False # TODO : handle error for None Node
 
-    if (node.bookID == key): # checking if current node is the searched one
+    if node.bookID is key: # checking if current node is the searched one
         return node
 
-    leftNode = lookup(node.left, key) # checking if left node is the searched one
-    if leftNode:
-        return leftNode
+    left_node = lookup(node.left, key) # checking if left node is the searched one
+    if left_node:
+        return left_node
 
-    rightNode = lookup(node.right, key)  # checking if right node is the searched one  
-    return rightNode
+    right_node = lookup(node.right, key)  # checking if right node is the searched one
+    return right_node
+
 
 def findMax(node):
-    # Base case
-    
-    if (node == None):
-        return False # TODO :  handle condition
-
-    print(node.bookID, node.chkOutCntr, node.left)
-    # Return maximum of 3 values:
-    # 1) Root's data 
-    # 2) Max in Left Subtree
-    # 3) Max in right subtree
-    if node.left:
-        lres = findMax(node.left)
-        if (lres.chkOutCntr > node.chkOutCntr):
-            res = lres
-    if node.right:
-        rres = findMax(node.right)
-        if (rres.chkOutCntr > node.chkOutCntr):
-            res = rres   
-    
-    return res
+    pass
 
 
 class LibraryRecord:
@@ -89,27 +72,21 @@ class LibraryRecord:
     def __init__(self):
         pass
 
-    def _readBookList(self, bkID, availCount): 
+    def _readBookList(self, bkID, avail_count): 
         if self.node is None:
-            self.node = bookNode(bkID, int(availCount))
+            self.node = bookNode(bkID, int(avail_count))
         else:
-            insert(self.node, bkID, int(availCount))            
+            insert(self.node, bkID, int(avail_count))            
 
     def _chkInChkOut(self, bkID, inOut):
-        print('*** {} book : {} ***'.format(inOut, bkID))
         node = lookup(self.node, bkID)
-        print('Currently {} has {} books available and is checked out {} times \n'
-        .format(node.bookID, node.avCntr, node.chkOutCntr))
-        
         if inOut == 'checkOut':
-            node.avCntr-=1 # TODO : handle condition for zero available
-            node.chkOutCntr+=1
+            node.avCntr -= 1  # TODO : handle condition for zero available
+            node.chkOutCntr += 1
         elif inOut == 'checkIn':
-            node.avCntr+=1
+            node.avCntr += 1
 
     def _getTopBooks(self, bkNode):
-        node = findMax(bkNode)
-        print(node.bkID, node.avCntr, node.chkOutCntr)
         pass
 
     def _notIssued(self, bkNode):
@@ -142,6 +119,5 @@ if __name__ == '__main__':
             if prompt[0] == 'checkIn' or prompt[0] == 'checkOut':
                 libraryRecords._chkInChkOut(prompt[1], prompt[0])
             elif prompt[0] == 'ListTopBooks':
+                print(libraryRecords.node.preorder(libraryRecords.node)) # For Test
                 libraryRecords._getTopBooks(libraryRecords.node)
-
-    print(libraryRecords.node.inorder(libraryRecords.node)) # For Test
