@@ -1,5 +1,14 @@
 class bookNode:
+    """ 
+    Class for book object which holds book ID, counter for the books available,
+    number of times book is checked out and reference to adjacent book object 
+    """
+
     def __init__ (self, bkID, avail_count):
+        """
+        :param bkID: Book ID
+        :param avail_count: Count of available books for this book
+        """
         self.bookID = bkID
         self.avCntr = avail_count
         self.chkOutCntr = 0
@@ -25,7 +34,15 @@ class bookNode:
         return res
 
 
-def insert(node, bkID, avail_count):   
+def insert(node, bkID, avail_count):
+    """
+    Method adds a new book in the library
+
+    :param node: bookNode tree object
+    :param bkID: Book ID
+    :param avail_count: Count of available books for this book
+    :return:
+    """
     q = []  
     q.append(node)  
  
@@ -46,7 +63,15 @@ def insert(node, bkID, avail_count):
             q.append(node.right)
 
 
-def lookup(node, key): 
+def lookup(node, key):
+    """
+    This function looks up the tree for the give book ID and
+    returns the object for that book
+
+    :param node: bookNode tree object
+    :param key: Book ID being looked for
+    :return: bookNode : Book object for the ID looked up
+    """
     if node is None:
         return False # TODO : handle error for None Node
 
@@ -62,19 +87,39 @@ def lookup(node, key):
 
 
 class LibraryRecord:
+    """ """
 
     node = None
 
     def __init__(self):
         pass
 
-    def _readBookList(self, bkID, avail_count): 
+    def _readBookList(self, bkID, avail_count):
+        """
+        Function adds book ID and the count of available books to the library
+
+        :param bkID: Book ID
+        :param avail_count: Count of available books for this book
+        :return:
+        """
         if self.node is None:
             self.node = bookNode(bkID, int(avail_count))
         else:
-            insert(self.node, bkID, int(avail_count))            
+            insert(self.node, bkID, int(avail_count))
 
     def _chkInChkOut(self, bkID, inOut):
+        """
+        Updates the value of available books and checked out book counter
+        based on prompt options 'checkIn' or 'checkOut'
+
+        inOut value:
+            checkOut -> Decreases count of available books
+            checkIn -> Increases count of available books
+
+        :param bkID: Book ID
+        :param inOut: Prompt if the book is checked in or checked out
+        :return:
+        """
         node = lookup(self.node, bkID)
 
         if inOut == 'checkOut':
@@ -84,16 +129,29 @@ class LibraryRecord:
             node.avCntr+=1
 
     def _getTopBooks(self, bkNode):
+        """
+
+        :param bkNode: bookNode tree object
+        :return:
+        """
         pass
 
     def _notIssued(self, bkNode):
+        """
+
+        :param bkNode: bookNode tree object
+        :return:
+        """
         pass
 
     def _findBook(self, eNode, bkID):
+        """
+
+        :param eNode: bookNode tree object
+        :param bkID: Book ID
+        :return:
+        """
         node = lookup(eNode, bkID)
-
-        prompt_text = None
-
         if node:
             if node.avCntr > 0:
                 prompt_text = 'Book id {} is available for checkout'.format(bkID)
@@ -107,6 +165,11 @@ class LibraryRecord:
         output.close()
 
     def printBooks(self, bkNode):
+        """
+
+        :param bkNode: bookNode tree object
+        :return:
+        """
         pass
 
 
