@@ -128,7 +128,7 @@ class LibraryRecord:
         elif inOut == 'checkIn':
             node.avCntr+=1
 
-    def _getTopBooks(self, bkNode):
+    def getTopBooks(self, bkNode):
         """
 
         :param bkNode: bookNode tree object
@@ -143,11 +143,20 @@ class LibraryRecord:
         
         maxRes = []
         if(node is not None):
-            maxRes = self._getTopBooks(left)
-            maxRes = maxRes + self._getTopBooks(right)
+            maxRes = self.getTopBooks(left)
+            maxRes = maxRes + self.getTopBooks(right)
             maxRes.append(node)
             maxRes.sort(key=lambda x: x.chkOutCntr, reverse=True)
         return maxRes[0:3]
+
+    def _getTopBooks(self, bkNode):
+        topBooks = self.getTopBooks(bkNode)
+        counter = 1 
+        for book in topBooks:
+            output = open("outputPS6.txt","a")
+            output.write('Top Books '+str(counter)+': '+str(book.bookID) + ', ' + str(book.chkOutCntr)+'\n')
+            output.close()
+            counter+=1
 
     def _notIssued(self, bkNode):
         """
@@ -207,7 +216,6 @@ if __name__ == '__main__':
                 libraryRecords._chkInChkOut(prompt[1], prompt[0])
             elif prompt[0] == 'ListTopBooks':
                 print(libraryRecords.node.preorder(libraryRecords.node)) # For Test
-                topBooks = libraryRecords._getTopBooks(libraryRecords.node)
-                [print(str(book.bookID) + ' ' + str(book.chkOutCntr)) for book in topBooks]
+                libraryRecords._getTopBooks(libraryRecords.node)
             elif prompt[0] == 'findBook':
                 libraryRecords._findBook(libraryRecords.node, prompt[1])
