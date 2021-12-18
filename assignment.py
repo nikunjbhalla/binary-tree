@@ -134,7 +134,20 @@ class LibraryRecord:
         :param bkNode: bookNode tree object
         :return:
         """
-        pass
+        if(bkNode is None):
+            return []
+
+        node = bkNode
+        left = bkNode.left
+        right = bkNode.right
+        
+        maxRes = []
+        if(node is not None):
+            maxRes = self._getTopBooks(left)
+            maxRes = maxRes + self._getTopBooks(right)
+            maxRes.append(node)
+            maxRes.sort(key=lambda x: x.chkOutCntr, reverse=True)
+        return maxRes[0:3]
 
     def _notIssued(self, bkNode):
         """
@@ -182,8 +195,8 @@ if __name__ == '__main__':
         for line in lines:
             bookInfo = line.strip('\n').split(',')
             libraryRecords._readBookList(bookInfo[0],bookInfo[1])
-        print(libraryRecords.node.inorder(libraryRecords.node))
-        print(libraryRecords.node.preorder(libraryRecords.node)) # For Test
+        # print(libraryRecords.node.inorder(libraryRecords.node))
+        # print(libraryRecords.node.preorder(libraryRecords.node)) # For Test
 
     with open('promptsPS6.txt') as f:
         lines = f.readlines()
@@ -194,6 +207,7 @@ if __name__ == '__main__':
                 libraryRecords._chkInChkOut(prompt[1], prompt[0])
             elif prompt[0] == 'ListTopBooks':
                 print(libraryRecords.node.preorder(libraryRecords.node)) # For Test
-                libraryRecords._getTopBooks(libraryRecords.node)
+                topBooks = libraryRecords._getTopBooks(libraryRecords.node)
+                [print(str(book.bookID) + ' ' + str(book.chkOutCntr)) for book in topBooks]
             elif prompt[0] == 'findBook':
                 libraryRecords._findBook(libraryRecords.node, prompt[1])
