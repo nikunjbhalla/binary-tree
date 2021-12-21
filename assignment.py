@@ -132,7 +132,7 @@ class LibraryRecord:
         """
 
         :param bkNode: bookNode tree object
-        :return:
+        :return: maxRes[0:3] first 3 items in the list maxRes which is sorted in descending order of checkout count
         """
         if(bkNode is None):
             return []
@@ -150,6 +150,11 @@ class LibraryRecord:
         return maxRes[0:3]
 
     def _getTopBooks(self, bkNode):
+        """
+
+        :param bkNode: bookNode tree object
+        :return: does not return anything, writes output to outputPS6.txt
+        """
         topBooks = self.getTopBooks(bkNode)
         counter = 1 
         for book in topBooks:
@@ -164,7 +169,44 @@ class LibraryRecord:
         :param bkNode: bookNode tree object
         :return:
         """
-        pass
+        root = bkNode
+        notIssued = self.notIssued(bkNode)
+        deletedNodes = []
+        for node in notIssued:
+            deletedNodes.append(self.deleteNode(node,root))
+        return deletedNodes
+    
+    def notIssued(self, node):
+        notIssued = []
+        if(node.left is not None):
+            notIssued = notIssued + self.notIssued(node.left)
+        if(node.chkOutCntr == 0):
+            notIssued.append(node)
+        if(node.right is not None):
+            notIssued = notIssued + self.notIssued(node.right)
+        return notIssued
+
+    def deleteNode(self, bkNode, root):
+        """
+
+        :param bkNode: bookNode tree object
+        :param root: root of the tree
+        :return:
+        """
+        curr = [root]
+        deepest_rightmost = None
+        while(len(curr)):
+            deepest_rightmost = curr.pop(0)
+            if(deepest_rightmost.left):
+                curr.append(deepest_rightmost.left)
+            if(deepest_rightmost.right):
+                curr.append(deepest_rightmost.right)
+        deletedID = bkNode.bookID
+        bkNode.bookID = deepest_rightmost.bookID
+        bkNode.avCntr = deepest_rightmost.avCntr
+        bkNode.chkOutCntr = deepest_rightmost.chkOutCntr
+        deepest_rightmost = None
+        return deletedID        
 
     def _findBook(self, eNode, bkID):
         """
@@ -215,7 +257,9 @@ if __name__ == '__main__':
             if prompt[0] == 'checkIn' or prompt[0] == 'checkOut':
                 libraryRecords._chkInChkOut(prompt[1], prompt[0])
             elif prompt[0] == 'ListTopBooks':
-                print(libraryRecords.node.preorder(libraryRecords.node)) # For Test
+                #print(libraryRecords.node.preorder(libraryRecords.node)) # For Test
                 libraryRecords._getTopBooks(libraryRecords.node)
             elif prompt[0] == 'findBook':
                 libraryRecords._findBook(libraryRecords.node, prompt[1])
+            elif prompt[0] == 'BooksNotIssued':
+                print(libraryRecords._notIssued(libraryRecords.node))
