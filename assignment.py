@@ -172,7 +172,9 @@ class LibraryRecord:
         root = bkNode
         notIssued = self.notIssued(bkNode)
         deletedBooks = []
-        for node in notIssued:
+
+        for nodeID in notIssued:
+            node = lookup(root,nodeID)
             deletedBooks.append(self.deleteNode(node,root))
         output = open("outputPS6.txt","a")
         output.write('List of books not issued:\n')
@@ -191,7 +193,7 @@ class LibraryRecord:
         if(node.left is not None):
             notIssued = notIssued + self.notIssued(node.left)
         if(node.chkOutCntr == 0):
-            notIssued.append(node)
+            notIssued.append(node.bookID)
         if(node.right is not None):
             notIssued = notIssued + self.notIssued(node.right)
         return notIssued
@@ -201,20 +203,31 @@ class LibraryRecord:
 
         :param bkNode: bookNode tree object
         :param root: root of the tree
-        :return deltedID: ID of the delted book
+        :return deletedID: ID of the delted book
         """
         curr = [root]
+        parent = []
+        last_parent = None
         deepest_rightmost = None
         while(len(curr)):
             deepest_rightmost = curr.pop(0)
+            if(len(parent)):
+                last_parent = parent.pop(0)
             if(deepest_rightmost.left):
                 curr.append(deepest_rightmost.left)
+                parent.append(deepest_rightmost)
             if(deepest_rightmost.right):
+                parent.append(deepest_rightmost)
                 curr.append(deepest_rightmost.right)
+            
         deletedID = bkNode.bookID
         bkNode.bookID = deepest_rightmost.bookID
         bkNode.avCntr = deepest_rightmost.avCntr
         bkNode.chkOutCntr = deepest_rightmost.chkOutCntr
+        if(last_parent.left == deepest_rightmost):
+            last_parent.left = None
+        elif(last_parent.right == deepest_rightmost):
+            last_parent.right = None
         deepest_rightmost = None
         return deletedID        
 
@@ -273,3 +286,4 @@ if __name__ == '__main__':
                 libraryRecords._findBook(libraryRecords.node, prompt[1])
             elif prompt[0] == 'BooksNotIssued':
                 libraryRecords._notIssued(libraryRecords.node)
+                #print(libraryRecords.node.preorder(libraryRecords.node)) # For test
