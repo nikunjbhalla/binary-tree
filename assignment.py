@@ -167,16 +167,26 @@ class LibraryRecord:
         """
 
         :param bkNode: bookNode tree object
-        :return:
+        :return deletedBooks: books IDs that were deleted
         """
         root = bkNode
         notIssued = self.notIssued(bkNode)
-        deletedNodes = []
+        deletedBooks = []
         for node in notIssued:
-            deletedNodes.append(self.deleteNode(node,root))
-        return deletedNodes
+            deletedBooks.append(self.deleteNode(node,root))
+        output = open("outputPS6.txt","a")
+        output.write('List of books not issued:\n')
+        for book in deletedBooks:
+            output.write(str(book)+'\n')
+        output.close()
+
+        return deletedBooks
     
     def notIssued(self, node):
+        """
+        :param bkNode: bookNode tree object
+        :return notIssued: list of book nodes to be deleted
+        """
         notIssued = []
         if(node.left is not None):
             notIssued = notIssued + self.notIssued(node.left)
@@ -191,7 +201,7 @@ class LibraryRecord:
 
         :param bkNode: bookNode tree object
         :param root: root of the tree
-        :return:
+        :return deltedID: ID of the delted book
         """
         curr = [root]
         deepest_rightmost = None
@@ -262,4 +272,4 @@ if __name__ == '__main__':
             elif prompt[0] == 'findBook':
                 libraryRecords._findBook(libraryRecords.node, prompt[1])
             elif prompt[0] == 'BooksNotIssued':
-                print(libraryRecords._notIssued(libraryRecords.node))
+                libraryRecords._notIssued(libraryRecords.node)
