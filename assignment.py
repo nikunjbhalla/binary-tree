@@ -34,58 +34,6 @@ class bookNode:
         return res
 
 
-def insert(node, bkID, avail_count):
-    """
-    Method adds a new book in the library
-
-    :param node: bookNode tree object
-    :param bkID: Book ID
-    :param avail_count: Count of available books for this book
-    :return:
-    """
-    q = []
-    q.append(node)
-
-    while len(q):
-        node = q[0]
-        q.pop(0)
-
-        if not node.left:
-            node.left = bookNode(bkID, avail_count)
-            break
-        else:
-            q.append(node.left)
-
-        if not node.right:
-            node.right = bookNode(bkID, avail_count)
-            break
-        else:
-            q.append(node.right)
-
-
-def lookup(node, key):
-    """
-    This function looks up the tree for the give book ID and
-    returns the object for that book
-
-    :param node: bookNode tree object
-    :param key: Book ID being looked for
-    :return: bookNode : Book object for the ID looked up
-    """
-    if node is None:
-        return False
-
-    if node.bookID == key: # checking if current node is the searched one
-        return node
-
-    left_node = lookup(node.left, key) # checking if left node is the searched one
-    if left_node:
-        return left_node
-
-    right_node = lookup(node.right, key)  # checking if right node is the searched one
-    return right_node
-
-
 class LibraryRecord:
     """ """
 
@@ -93,6 +41,57 @@ class LibraryRecord:
 
     def __init__(self):
         pass
+
+    def insert(self, node, bkID, avail_count):
+        """
+        Method adds a new book in the library
+
+        :param node: bookNode tree object
+        :param bkID: Book ID
+        :param avail_count: Count of available books for this book
+        :return:
+        """
+        q = []
+        q.append(node)
+
+        while len(q):
+            node = q[0]
+            q.pop(0)
+
+            if not node.left:
+                node.left = bookNode(bkID, avail_count)
+                break
+            else:
+                q.append(node.left)
+
+            if not node.right:
+                node.right = bookNode(bkID, avail_count)
+                break
+            else:
+                q.append(node.right)
+
+    def lookup(self, node, key):
+        """
+        This function looks up the tree for the give book ID and
+        returns the object for that book
+
+        :param node: bookNode tree object
+        :param key: Book ID being looked for
+        :return: bookNode : Book object for the ID looked up
+        """
+        if node is None:
+            return False
+
+        if node.bookID == key: # checking if current node is the searched one
+            return node
+
+        left_node = self.lookup(node.left, key) # checking if left node is the searched one
+        if left_node:
+            return left_node
+
+        right_node = self.lookup(node.right, key)  # checking if right node is the searched one
+        return right_node
+
 
     def _readBookList(self, bkID, avail_count):
         """
@@ -105,7 +104,7 @@ class LibraryRecord:
         if self.node is None:
             self.node = bookNode(bkID, int(avail_count))
         else:
-            insert(self.node, bkID, int(avail_count))
+            self.insert(self.node, bkID, int(avail_count))
 
     def _chkInChkOut(self, bkID, inOut):
         """
@@ -120,7 +119,7 @@ class LibraryRecord:
         :param inOut: Prompt if the book is checked in or checked out
         :return:
         """
-        node = lookup(self.node, bkID)
+        node = self.lookup(self.node, bkID)
 
         if node.bookID:
             if inOut == 'checkOut':
@@ -130,7 +129,7 @@ class LibraryRecord:
                 else:
                     output = open("outputPS6.txt","a")
                     output.write("All available copies of the below books have been checked out:"+" \n")
-                    output.write(bkID)
+                    output.write(bkID+'\n')
                     output.close()
 
             elif inOut == 'checkIn':
@@ -186,7 +185,7 @@ class LibraryRecord:
         deletedBooks = []
 
         for nodeID in notIssued:
-            node = lookup(root,nodeID)
+            node = self.lookup(root,nodeID)
             deletedBooks.append(self.deleteNode(node,root))
         output = open("outputPS6.txt","a")
         output.write('List of books not issued:\n')
@@ -250,7 +249,7 @@ class LibraryRecord:
         :param bkID: Book ID
         :return:
         """
-        node = lookup(eNode, bkID)
+        node = self.lookup(eNode, bkID)
         if node and node.bookID:
             if node.avCntr > 0:
                 prompt_text = 'Book id {} is available for checkout'.format(bkID)
@@ -282,7 +281,7 @@ class LibraryRecord:
         res.sort(key=lambda x: x.bookID)
 
         output = open("outputPS6.txt","a")
-        output.write('There are a total of {} book titles in the library:\n'.format(len(res)))
+        output.write('There are a total of {} book titles in the library.\n'.format(len(res)))
         for book in res:
             output.write('{}, {}'.format(book.bookID, book.avCntr)+'\n')
         output.close()
@@ -297,8 +296,8 @@ if __name__ == '__main__':
         for line in lines:
             bookInfo = line.strip('\n').split(',')
             libraryRecords._readBookList(bookInfo[0],bookInfo[1])
-        # print(libraryRecords.node.inorder(libraryRecords.node))
-        # print(libraryRecords.node.preorder(libraryRecords.node))
+    # print(libraryRecords.node.inorder(libraryRecords.node))
+    # print(libraryRecords.node.preorder(libraryRecords.node))
 
     with open('promptsPS6.txt') as f:
         lines = f.readlines()
@@ -315,5 +314,5 @@ if __name__ == '__main__':
                 libraryRecords._notIssued(libraryRecords.node)
             elif prompt[0] == 'printInventory':
                 libraryRecords.printBooks(libraryRecords.node)
-    # print(libraryRecords.node.preorder(libraryRecords.node)) # For test
+    # print(libraryRecords.node.preorder(libraryRecords.node))
     # print(libraryRecords.node.inorder(libraryRecords.node))
