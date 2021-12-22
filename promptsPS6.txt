@@ -2,14 +2,21 @@ checkOut: 100001
 checkOut: 100002
 checkOut: 100003
 checkOut: 100003
-checkOut: 100001
-checkOut: 100001
-checkOut: 100001
+checkOut: 100006
+checkOut: 100006
+checkOut: 100006
 checkOut: 100005
 checkIn: 100001
 checkIn: 100002
+checkOut: 100006
 checkOut: 100001
+checkOut: 100001
+checkOut: 100001
+checkOut: 100001
+checkOut: 100001
+findBook: 404
+findBook: 100001
+findBook: 100005
 ListTopBooks
 BooksNotIssued
-findBook: 100005
 printInventory
