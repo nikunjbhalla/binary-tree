@@ -205,6 +205,13 @@ class LibraryRecord:
         :param root: root of the tree
         :return deletedID: ID of the delted book
         """
+        if(root.left is None and root.right is None):
+            deletedID = bkNode.bookID
+            bkNode = None
+            root = None
+            self.node = None
+            return deletedID
+            
         curr = [root]
         parent = []
         last_parent = None
@@ -257,6 +264,7 @@ class LibraryRecord:
         :param bkNode: bookNode tree object
         :return:
         """
+        
         pass
 
 
