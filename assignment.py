@@ -42,6 +42,125 @@ class LibraryRecord:
     def __init__(self):
         pass
 
+    def _readBookList(self, bkID, availCount):
+        """
+        Function adds book ID and the count of available books to the library
+
+        :param bkID: Book ID
+        :param avail_count: Count of available books for this book
+        :return: None
+        """
+        if self.node is None:
+            self.node = bookNode(bkID, int(availCount))
+        else:
+            self.insert(self.node, bkID, int(availCount))
+
+    def _chkInChkOut(self, bkID, inOut):
+        """
+        Updates the value of available books and checked out book counter
+        based on prompt options 'checkIn' or 'checkOut'
+
+        inOut value:
+            checkOut -> Decreases count of available books
+            checkIn -> Increases count of available books
+
+        :param bkID: Book ID
+        :param inOut: Prompt if the book is checked in or checked out
+        :return: None
+        """
+        node = self.lookup(self.node, bkID)
+
+        if node.bookID:
+            if inOut == 'checkOut':
+                if node.avCntr > 0:
+                    node.avCntr-=1
+                    node.chkOutCntr+=1
+                else:
+                    output = open("outputPS6.txt","a")
+                    output.write("All available copies of the below books have been checked out:"+" \n")
+                    output.write(bkID+'\n')
+                    output.close()
+
+            elif inOut == 'checkIn':
+                node.avCntr+=1
+        else:
+            output = open("outputPS6.txt","a")
+            output.write("Book id {} does not exist.".format(bkID))
+            output.close()
+
+    def _getTopBooks(self, bkNode):
+        """
+
+        :param bkNode: bookNode tree object
+        :return: does not return anything, writes output to outputPS6.txt
+        """
+        topBooks = self.getTopBooks(bkNode)
+        counter = 1
+        for book in topBooks:
+            output = open("outputPS6.txt","a")
+            output.write('Top Books '+str(counter)+': '+str(book.bookID) + ', ' + str(book.chkOutCntr)+'\n')
+            output.close()
+            counter+=1
+
+    def _notIssued(self, bkNode):
+        """
+
+        :param bkNode: bookNode tree object
+        :return deletedBooks: books IDs that were deleted
+        """
+        root = bkNode
+        notIssued = self.notIssued(bkNode)
+        deletedBooks = []
+
+        for nodeID in notIssued:
+            node = self.lookup(root,nodeID)
+            deletedBooks.append(self.deleteNode(node,root))
+        output = open("outputPS6.txt","a")
+        output.write('List of books not issued:\n')
+        for book in deletedBooks:
+            output.write(str(book)+'\n')
+        output.close()
+
+        return deletedBooks
+
+    def _findBook(self, eNode, bkID):
+        """
+
+        :param eNode: bookNode tree object
+        :param bkID: Book ID
+        :return:
+        """
+        node = self.lookup(eNode, bkID)
+        if node and node.bookID:
+            if node.avCntr > 0:
+                prompt_text = 'Book id {} is available for checkout'.format(bkID)
+            else:
+                prompt_text = 'All copies of book id {} have been checked out'.format(bkID)
+        else:
+            prompt_text = 'Book id {} does not exist.'.format(bkID)
+
+        output = open("outputPS6.txt","a")
+        output.write(prompt_text+" \n")
+        output.close()
+
+    def printBooks(self, bkNode):
+        """
+
+        :param bkNode: bookNode tree object
+        :return:
+        """
+        res = self.traverse(bkNode)
+
+        res.sort(key=lambda x: x.bookID)
+
+        output = open("outputPS6.txt","a")
+        output.write('There are a total of {} book titles in the library.\n'.format(len(res)))
+        for book in res:
+            output.write('{}, {}'.format(book.bookID, book.avCntr)+'\n')
+        output.close()
+
+        
+
     def insert(self, node, bkID, avail_count):
         """
         Method adds a new book in the library
@@ -92,53 +211,6 @@ class LibraryRecord:
         right_node = self.lookup(node.right, key)  # checking if right node is the searched one
         return right_node
 
-
-    def _readBookList(self, bkID, avail_count):
-        """
-        Function adds book ID and the count of available books to the library
-
-        :param bkID: Book ID
-        :param avail_count: Count of available books for this book
-        :return:
-        """
-        if self.node is None:
-            self.node = bookNode(bkID, int(avail_count))
-        else:
-            self.insert(self.node, bkID, int(avail_count))
-
-    def _chkInChkOut(self, bkID, inOut):
-        """
-        Updates the value of available books and checked out book counter
-        based on prompt options 'checkIn' or 'checkOut'
-
-        inOut value:
-            checkOut -> Decreases count of available books
-            checkIn -> Increases count of available books
-
-        :param bkID: Book ID
-        :param inOut: Prompt if the book is checked in or checked out
-        :return:
-        """
-        node = self.lookup(self.node, bkID)
-
-        if node.bookID:
-            if inOut == 'checkOut':
-                if node.avCntr > 0:
-                    node.avCntr-=1
-                    node.chkOutCntr+=1
-                else:
-                    output = open("outputPS6.txt","a")
-                    output.write("All available copies of the below books have been checked out:"+" \n")
-                    output.write(bkID+'\n')
-                    output.close()
-
-            elif inOut == 'checkIn':
-                node.avCntr+=1
-        else:
-            output = open("outputPS6.txt","a")
-            output.write("Book id {} does not exist.".format(bkID))
-            output.close()
-
     def getTopBooks(self, bkNode):
         """
 
@@ -159,41 +231,6 @@ class LibraryRecord:
             maxRes.append(node)
             maxRes.sort(key=lambda x: x.chkOutCntr, reverse=True)
         return maxRes[0:3]
-
-    def _getTopBooks(self, bkNode):
-        """
-
-        :param bkNode: bookNode tree object
-        :return: does not return anything, writes output to outputPS6.txt
-        """
-        topBooks = self.getTopBooks(bkNode)
-        counter = 1
-        for book in topBooks:
-            output = open("outputPS6.txt","a")
-            output.write('Top Books '+str(counter)+': '+str(book.bookID) + ', ' + str(book.chkOutCntr)+'\n')
-            output.close()
-            counter+=1
-
-    def _notIssued(self, bkNode):
-        """
-
-        :param bkNode: bookNode tree object
-        :return deletedBooks: books IDs that were deleted
-        """
-        root = bkNode
-        notIssued = self.notIssued(bkNode)
-        deletedBooks = []
-
-        for nodeID in notIssued:
-            node = self.lookup(root,nodeID)
-            deletedBooks.append(self.deleteNode(node,root))
-        output = open("outputPS6.txt","a")
-        output.write('List of books not issued:\n')
-        for book in deletedBooks:
-            output.write(str(book)+'\n')
-        output.close()
-
-        return deletedBooks
 
     def notIssued(self, node):
         """
@@ -242,26 +279,6 @@ class LibraryRecord:
         deepest_rightmost = None
         return deletedID
 
-    def _findBook(self, eNode, bkID):
-        """
-
-        :param eNode: bookNode tree object
-        :param bkID: Book ID
-        :return:
-        """
-        node = self.lookup(eNode, bkID)
-        if node and node.bookID:
-            if node.avCntr > 0:
-                prompt_text = 'Book id {} is available for checkout'.format(bkID)
-            else:
-                prompt_text = 'All copies of book id {} have been checked out'.format(bkID)
-        else:
-            prompt_text = 'Book id {} does not exist.'.format(bkID)
-
-        output = open("outputPS6.txt","a")
-        output.write(prompt_text+" \n")
-        output.close()
-
     def traverse(self, bkNode):
         res = []
         if bkNode:
@@ -269,22 +286,6 @@ class LibraryRecord:
             res = res + self.traverse(bkNode.left)
             res = res + self.traverse(bkNode.right)
         return res
-
-    def printBooks(self, bkNode):
-        """
-
-        :param bkNode: bookNode tree object
-        :return:
-        """
-        res = self.traverse(bkNode)
-
-        res.sort(key=lambda x: x.bookID)
-
-        output = open("outputPS6.txt","a")
-        output.write('There are a total of {} book titles in the library.\n'.format(len(res)))
-        for book in res:
-            output.write('{}, {}'.format(book.bookID, book.avCntr)+'\n')
-        output.close()
 
 
 if __name__ == '__main__':
